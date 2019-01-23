@@ -12,31 +12,57 @@ class Engine {
         }
         this.score = 0;
         this.level = 1;
+        this.intervalTimer = initialTimer;
+        this.countRemovedRows = 0;
+        this.nextPiece = Pieces.random();
         this.getNewPiece();
 
         this.startTimer();
-        // TODO score
-        // TODO level up
+        // TODO bounce from sides
+    }
+
+    addScore(extraScore){
+        this.score += extraScore;
+        console.log("new Score =", this.score)
     }
 
     startTimer() {
+        // check if interval exists
+        if(this.interval) {
+            clearInterval(this.interval)
+        }
         var that = this;
-        setInterval(function() {
+        this.interval = setInterval(function() {
             that.moveDown();
             draw();
-        }, 1000)
+        }, this.intervalTimer)
 
+    }
+
+    levelUp() {
+        if(this.countRemovedRows % levelUpLines === 0) {
+            this.level++;
+            this.intervalTimer *= speedIncrease;
+            this.startTimer();
+            console.log("new Level", this.level)
+        }
     }
 
     // position and orientation of the piece when starting the game
     getNewPiece() {
-        // TODO nextPiece box
-        this.currentPiece = Pieces.random();
+        this.currentPiece = this.nextPiece;
+        this.nextPiece = Pieces.random();
         this.piecePosition = {
-            col: this.width/2 -1,
+            col: this.width / 2 - 1,
             row: 0,
             orientation: 0,
         }; 
+        this.addScore(20);
+
+        if (this.gameOver()) {
+            clearInterval(this.interval);
+            alert("Game over");
+        }
     }
 
     // Orientation of the current piece (gets two dimensional array)
@@ -94,6 +120,15 @@ class Engine {
         return true;
     }
 
+    gameOver(){
+        // return !this.isLegalMove(this.piecePosition);
+        if (this.isLegalMove(this.piecePosition)) {
+            return false
+        } else {
+            return true
+        }
+    }
+
     putPieceOnBoard() {
         var currentPieceOrientation = this.getCurrentPieceOrientation();
         for (var i = 0; i < 4; i++) {
@@ -136,6 +171,9 @@ class Engine {
                 for (var c = 0; c < this.width; c++) {
                     this.board[0][c] = 0;
                 }
+                this.countRemovedRows++;
+                this.addScore(100);
+                this.levelUp();
             }
 
         }

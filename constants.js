@@ -12,9 +12,13 @@ var colors = [
     "white",
     "orange",
     "blue",
-    "yellow",
+    "chartreuse",
     "red",
     "green",
     "cyan",
     "teal",
 ];
+
+var levelUpLines = 3;
+var speedIncrease = 0.8;
+var initialTimer = 1000;

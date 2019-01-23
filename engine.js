@@ -12,13 +12,28 @@ class Engine {
         }
         this.score = 0;
         this.level = 1;
-        this.currentPiece = Pieces.random();
-        // TODO nextPiece
+        this.getNewPiece();
+
+        this.startTimer();
         // TODO score
-        // TODO remove lines
         // TODO level up
+    }
+
+    startTimer() {
+        var that = this;
+        setInterval(function() {
+            that.moveDown();
+            draw();
+        }, 1000)
+
+    }
+
+    // position and orientation of the piece when starting the game
+    getNewPiece() {
+        // TODO nextPiece box
+        this.currentPiece = Pieces.random();
         this.piecePosition = {
-            col: 0,
+            col: this.width/2 -1,
             row: 0,
             orientation: 0,
         }; 
@@ -26,12 +41,12 @@ class Engine {
 
     // Orientation of the current piece (gets two dimensional array)
     getCurrentPieceOrientation(orientation) {
-        return this.currentPiece.getOrientation(orientation || this.piecePosition.orientation);
+        return this.currentPiece.getOrientation((orientation || this.piecePosition.orientation) % 4);
     }
 
     // get what is presented on the board (empty space, piece)
     getCellByIndex(i, j) {
-        if(j < this.piecePosition.col || 
+        if (j < this.piecePosition.col || 
             i < this.piecePosition.row ||
             j > this.piecePosition.col + 3 ||
             i > this.piecePosition.row + 3) {
@@ -40,15 +55,13 @@ class Engine {
 
         var currentPieceOrientation = this.getCurrentPieceOrientation();
 
-        // i,j relative to currentPieceOrientation position
-        var relativeIndices = {
-            row: i - this.piecePosition.row,
-            col: j - this.piecePosition.col,
-        };
+        // i,j relative to currentPieceOrientation position => r,c (indicies inside 4x4)
+        var r = i - this.piecePosition.row;
+        var c = j - this.piecePosition.col;
 
         // if piece cell is truthy -> return it, if not -> return board
-        if (currentPieceOrientation[relativeIndices.row][relativeIndices.col]) {
-            return currentPieceOrientation[relativeIndices.row][relativeIndices.col];
+        if (currentPieceOrientation[r][c]) {
+            return currentPieceOrientation[r][c];
         } else {
             return this.board[i][j];
         }
@@ -56,23 +69,22 @@ class Engine {
 
     // check if there is already a piece in this position or if border gets overstepped
     isLegalMove(position) {
-        var currentPieceOrientation = this.getCurrentPieceOrientation(position.orientation % 4);
+        var currentPieceOrientation = this.getCurrentPieceOrientation(position.orientation);
         for (var i = 0; i < 4; i++) {
             for (var j = 0; j < 4; j++) {
-                // check if cell needs to be examined (as 0 is falsy and anything else is truthy)
+                // check if occupied cell needs to be examined (as 0 is falsy and anything else is truthy)
                 if (currentPieceOrientation[i][j]) {
-                    var boardIndicies = {
-                        row: position.row + i,
-                        col: position.col + j,
-                    };
+                    // check if cell on the board is already occupied
+                    var r = position.row + i;
+                    var c = position.col + j;
                     
                     //check if border gets overstepped
-                    //or if cell is occupied
-                    if (boardIndicies.row >= this.height ||
-                        boardIndicies.col >= this.width ||
-                        boardIndicies.row < 0 ||
-                        boardIndicies.col < 0 ||
-                        this.board[boardIndicies.row][boardIndicies.col]) {
+                    if (r >= this.height ||
+                        c >= this.width ||
+                        r < 0 ||
+                        c < 0 ||
+                        //or if cell is occupied
+                        this.board[r][c]) {
                             return false;
                         }
                 }
@@ -88,22 +100,45 @@ class Engine {
             for (var j = 0; j < 4; j++) {
                 // check if cell needs to be examined (as 0 is falsy and anything else is truthy)
                 if (currentPieceOrientation[i][j]) {
-                    var boardIndicies = {
-                        row: this.piecePosition.row + i,
-                        col: this.piecePosition.col + j,
-                    };
+                    var r = this.piecePosition.row + i;
+                    var c = this.piecePosition.col + j;
                     
-                    this.board[boardIndicies.row][boardIndicies.col] = currentPieceOrientation[i][j];
+                    this.board[r][c] = currentPieceOrientation[i][j];
                 }
             }
         }
 
-        this.currentPiece = Pieces.random();
-        this.piecePosition = {
-            col: 0,
-            row: 0,
-            orientation: 0,
-        }; 
+        this.removeCompleteRows();
+        this.getNewPiece();
+    }
+
+    removeCompleteRows() {
+        for (var i = 0; i < this.height; i++) {
+            var isCompleteRow = true;
+            for (var j = 0; j < this.width; j++) {
+                //if board cells are not occupied, it is not a complete row
+                if (!this.board[i][j]) {
+                    isCompleteRow = false;
+                }
+            }
+
+            if (isCompleteRow) {
+                // iterating through this.board starting from the row that gets deducted
+                for (var r = i; r > 0; r--) {
+                    // iterate over the row cells
+                    for (var c = 0; c < this.width; c++) {
+                        // moves the board one row down from the completed row
+                        this.board[r][c] = this.board[r-1][c]
+                    }
+                }
+
+                // empty the first row
+                for (var c = 0; c < this.width; c++) {
+                    this.board[0][c] = 0;
+                }
+            }
+
+        }
     }
 
     moveDown() {
@@ -143,10 +178,11 @@ class Engine {
             row: this.piecePosition.row,
             orientation: this.piecePosition.orientation + 1,
         })) {
-            this.piecePosition.orientation = (this.piecePosition.orientation + 1) % 4;
+            this.piecePosition.orientation++;
         }
     }
 
+    // engine-check in console 
     console() {
         var output = "";
         for (var i = 0; i < this.height; i++) {

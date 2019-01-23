@@ -30,7 +30,7 @@ function drawSquare(x, y, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x*cellDimensions.width, y*cellDimensions.height, cellDimensions.width, cellDimensions.height)
     //drawing the square-lines:
-    ctx.strokeStyle = "black";
+    ctx.strokeStyle = "#ddd";
     ctx.strokeRect(x*cellDimensions.width, y*cellDimensions.height, cellDimensions.width, cellDimensions.height);
 }
 
@@ -41,7 +41,6 @@ function draw() {
         }
     }
 }
-
 
 var engine = new Engine(boardDimensions.width, boardDimensions.height);
 engine.console(); 

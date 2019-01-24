@@ -1,5 +1,7 @@
+
 class Engine {
     constructor(width, height) {
+        this.gameStarted = false
         this.width = width;
         this.height = height;
 
@@ -28,7 +30,6 @@ class Engine {
             this.levelUp();
         }
         console.log("new Score =", this.score)
-        
     }
 
     startTimer() {
@@ -41,7 +42,7 @@ class Engine {
             that.moveDown();
             draw();
         }, this.intervalTimer)
-
+        
     }
 
     levelUp() {
@@ -62,10 +63,15 @@ class Engine {
             row: 0,
             orientation: 0,
         }; 
-        this.addScore(20);
+        if (this.gameStarted){
+        this.addScore(20)
+    } else {this.gameStarted = true}
 
         if (this.gameOver()) {
             clearInterval(this.interval);
+            audio.loop = false;
+            audio.pause();
+            audio.currentTime = 0;
             alert("Game over");
         }
     }
@@ -121,7 +127,6 @@ class Engine {
                 }
             }
         }
-
         return true;
     }
 
@@ -130,8 +135,11 @@ class Engine {
         if (this.isLegalMove(this.piecePosition)) {
             return false
         } else {
+            document.getElementById("startBtn").style.display ="block"
+            console.log("GAME OVER!")
+            audio.pause()
             return true
-        }
+        } 
     }
 
     putPieceOnBoard() {
@@ -180,7 +188,6 @@ class Engine {
                 this.addScore(100);
                 this.levelUp();
             }
-
         }
     }
 
@@ -201,8 +208,7 @@ class Engine {
             row: this.piecePosition.row,
         })) {
             this.piecePosition.col++;
-        }
-        
+        } 
     }
 
     moveLeft() {
@@ -211,8 +217,7 @@ class Engine {
             row: this.piecePosition.row,
         })) {
             this.piecePosition.col--;
-        }
-        
+        } 
     }
 
     rotatePiece() {

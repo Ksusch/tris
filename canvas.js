@@ -1,10 +1,10 @@
-
+var audio = new Audio('korobeiniki.mp3')
 document.onkeydown = function(event) {
     event.preventDefault(); 
     switch (event.keyCode) {
         case 40:
             engine.moveDown();
-            engine.addScore(10);
+            engine.addScore(1);
             // engine.console();   
             break;
 
@@ -36,6 +36,9 @@ function drawSquare(x, y, color) {
     ctx.strokeRect(x*cellDimensions.width, y*cellDimensions.height, cellDimensions.width, cellDimensions.height);
 }
 
+
+var engine
+
 function draw() {
     // when gameOver, don't draw
     if(engine.gameOver()) {
@@ -57,8 +60,17 @@ function draw() {
     
 }
 
-var engine = new Engine(boardDimensions.width, boardDimensions.height);
+document.getElementById("startBtn").onclick = function() {
+    engine = new Engine(boardDimensions.width, boardDimensions.height);
+    this.style.display = "none"
+    draw()  
+    
+    audio.play()
+    audio.loop = true;
+    
+
+}
 
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext('2d');
-draw()  
+

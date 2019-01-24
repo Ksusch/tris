@@ -15,10 +15,11 @@ var colors = [
     "chartreuse",
     "red",
     "green",
-    "cyan",
+    "purple",
     "teal",
 ];
 
 var levelUpLines = 3;
 var speedIncrease = 0.8;
 var initialTimer = 1000;
+var levelUpScore = 800;

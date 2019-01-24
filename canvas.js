@@ -1,5 +1,6 @@
 
 document.onkeydown = function(event) {
+    event.preventDefault(); 
     switch (event.keyCode) {
         case 40:
             engine.moveDown();
@@ -36,6 +37,10 @@ function drawSquare(x, y, color) {
 }
 
 function draw() {
+    // when gameOver, don't draw
+    if(engine.gameOver()) {
+        return;
+    }
     for(var i = 0; i < engine.height; i++) {
         for(var j = 0; j < engine.width; j++) {
             drawSquare(j, i, colors[engine.getCellByIndex(i, j)])

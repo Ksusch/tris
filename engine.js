@@ -23,7 +23,12 @@ class Engine {
 
     addScore(extraScore){
         this.score += extraScore;
+        //level up every time you get another levelUpScore
+        if(this.score % levelUpScore === 0) {
+            this.levelUp();
+        }
         console.log("new Score =", this.score)
+        
     }
 
     startTimer() {
@@ -217,6 +222,17 @@ class Engine {
             orientation: this.piecePosition.orientation + 1,
         })) {
             this.piecePosition.orientation++;
+        } else {
+            console.log("one rotation", this.isLegalMove({
+                col: this.piecePosition.col,
+                row: this.piecePosition.row,
+                orientation: this.piecePosition.orientation + 1,
+            }))
+            console.log("two rotation", this.isLegalMove({
+                col: this.piecePosition.col,
+                row: this.piecePosition.row,
+                orientation: this.piecePosition.orientation + 2,
+            }))
         }
     }
 

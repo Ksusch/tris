@@ -1,7 +1,6 @@
 
 class Engine {
     constructor(width, height) {
-        this.gameStarted = false
         this.width = width;
         this.height = height;
 
@@ -12,15 +11,16 @@ class Engine {
                 this.board[r][c] = 0;
             }
         }
+        this.paused = false;
         this.score = 0;
         this.level = 1;
         this.intervalTimer = initialTimer;
         this.countRemovedRows = 0;
         this.nextPiece = Pieces.random();
+        
         this.getNewPiece();
-
         this.startTimer();
-        // TODO bounce from sides
+        // TODO wall kick from sides
     }
 
     addScore(extraScore){
@@ -39,10 +39,11 @@ class Engine {
         }
         var that = this;
         this.interval = setInterval(function() {
-            that.moveDown();
+            if(that.paused === false) {
+                that.moveDown();
+            }
             draw();
-        }, this.intervalTimer)
-        
+        }, this.intervalTimer);
     }
 
     levelUp() {
@@ -56,6 +57,9 @@ class Engine {
 
     // position and orientation of the piece when starting the game
     getNewPiece() {
+        if(this.currentPiece) {
+            this.addScore(20) 
+        }
         this.currentPiece = this.nextPiece;
         this.nextPiece = Pieces.random();
         this.piecePosition = {
@@ -63,16 +67,13 @@ class Engine {
             row: 0,
             orientation: 0,
         }; 
-        if (this.gameStarted){
-        this.addScore(20)
-    } else {this.gameStarted = true}
 
         if (this.gameOver()) {
             clearInterval(this.interval);
-            audio.loop = false;
-            audio.pause();
-            audio.currentTime = 0;
-            alert("Game over");
+            backgroundMusic.loop = false;
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            alert("Game over. Your score is: " + (this.score - 20));
         }
     }
 
@@ -136,8 +137,9 @@ class Engine {
             return false
         } else {
             document.getElementById("startBtn").style.display ="block"
+            document.getElementById("game").style.display ="none"
             console.log("GAME OVER!")
-            audio.pause()
+            backgroundMusic.pause()
             return true
         } 
     }
@@ -240,6 +242,16 @@ class Engine {
             }))
         }
     }
+
+    togglePause() {
+        if(this.paused === false) {
+            this.paused = true;
+            backgroundMusic.pause();
+        } else {
+            this.paused = false;
+            backgroundMusic.play();
+        }
+    } 
 
     // engine-check in console 
     console() {

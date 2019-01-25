@@ -8,9 +8,14 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="canvas" width=300 height=400></canvas>
-    <button type="button" id="startBtn"">START</button>
-    <div id="score">0</div>
+
+    <!-- <button type="button" id="startBtn"">START</button> -->
+    <div class="starter-image bg" id="startBtn"></div>
+    <div id="game">
+        <canvas id="canvas" width="300" height="400"></canvas>
+        <div class="instructions"> ← ↓ → move, ↑ rotate, [space] pause/resume </div>
+    </div>
+    <!-- <div id="score"></div> -->
     <script src="constants.js"></script>
     <script src="pieces.js"></script>
     <script src="engine.js"></script>

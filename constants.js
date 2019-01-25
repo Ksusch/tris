@@ -10,13 +10,13 @@ var cellDimensions = {
 
 var colors = [
     "white",
-    "orange",
-    "blue",
-    "chartreuse",
-    "red",
-    "green",
-    "purple",
-    "teal",
+    "#47B5D3",
+    "#8DCADA",
+    "#B2D4DE",
+    "#B2D4DE",
+    "#D3DEE1",
+    "#26B57C",
+    "#598A8C",
 ];
 
 var levelUpLines = 3;

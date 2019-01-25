@@ -1,5 +1,11 @@
-var audio = new Audio('korobeiniki.mp3')
+var backgroundMusic = new Audio('korobeiniki.mp3')
 document.onkeydown = function(event) {
+    if(event.keyCode == 32) {
+        engine.togglePause();
+    }
+    if (!engine || engine.paused) {
+        return
+    }
     event.preventDefault(); 
     switch (event.keyCode) {
         case 40:
@@ -36,14 +42,14 @@ function drawSquare(x, y, color) {
     ctx.strokeRect(x*cellDimensions.width, y*cellDimensions.height, cellDimensions.width, cellDimensions.height);
 }
 
-
-var engine
-
 function draw() {
     // when gameOver, don't draw
     if(engine.gameOver()) {
         return;
     }
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     for(var i = 0; i < engine.height; i++) {
         for(var j = 0; j < engine.width; j++) {
             drawSquare(j, i, colors[engine.getCellByIndex(i, j)])
@@ -52,25 +58,32 @@ function draw() {
     
     for (var i = 0; i < 4; i++) {
         for(var j = 0; j < 4; j++) {
-            drawSquare(engine.width + j + 1, i, colors[engine.nextPiece.getOrientation(0)[i][j]])
+            if(engine.nextPiece.getOrientation(0)[i][j]) {
+                drawSquare(engine.width + j + 1, i, colors[engine.nextPiece.getOrientation(0)[i][j]])
+            }
         }
     }
 
-    document.getElementById("score").innerHTML = "Score: " + engine.score + "<br>Level: " + engine.level + "<br>Lines: " + engine.countRemovedRows;
+    ctx.fillStyle = "black";
+    ctx.fillText("Score: " + engine.score, (engine.width + 1)* cellDimensions.width, (engine.height - 3) * cellDimensions.height);
+    ctx.fillText("Level: " + engine.level, (engine.width + 1)* cellDimensions.width, (engine.height - 2) * cellDimensions.height);
+    ctx.fillText("Lines: " + engine.countRemovedRows, (engine.width + 1)* cellDimensions.width, (engine.height - 1) * cellDimensions.height);
     
 }
 
 document.getElementById("startBtn").onclick = function() {
     engine = new Engine(boardDimensions.width, boardDimensions.height);
-    this.style.display = "none"
-    draw()  
+    this.style.display = "none";
+    document.getElementById("game").style.display = "block";
+    draw();
     
-    audio.play()
-    audio.loop = true;
-    
-
+    backgroundMusic.play();
+    backgroundMusic.loop = true;
 }
 
+var engine;
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext('2d');
+ctx.font = "14px Arial";
+
 
